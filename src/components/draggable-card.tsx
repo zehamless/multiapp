@@ -45,7 +45,8 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
             <div ref={nodeRef} className="h-fit">
                 <Card className="w-fit" onDoubleClick={handleDoubleClick}>
                     <div className="p-2 flex justify-end">
-                        {editState.isPinned ? <PinOff size={20} onClick={handlePin}/> : <Pin size={20} onClick={handlePin}/>}
+                        {editState.isPinned ? <PinOff size={20} onClick={handlePin}/> :
+                            <Pin size={20} onClick={handlePin}/>}
                     </div>
                     <CardHeader id="card_drag" className="py-1 cursor-pointer">
                         <CardTitle>{card.title}</CardTitle>
@@ -53,9 +54,13 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
                     <CardContent>
                         <p style={{whiteSpace: 'pre-wrap'}}>{card.content}</p>
                     </CardContent>
-                    <Button variant="outline" size="icon" className="m-3" onClick={handleDelete}>
-                        <X/>
-                    </Button>
+                    <div className="m-3 flex items-end justify-between">
+                        <Button variant="outline" size="icon"  onClick={handleDelete}>
+                            <X/>
+                        </Button>
+                        <p className="text-xs pl-4">{card.lastEditted.toLocaleString()}</p>
+                    </div>
+
                 </Card>
                 <Dialog open={editState.isEditing} onOpenChange={(isOpen) => setEditState({...editState, isEditing: isOpen})}>
                     <DialogContent className="sm:max-w-[425px]">

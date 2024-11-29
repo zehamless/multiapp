@@ -4,6 +4,7 @@ type Card = {
     content: string;
     pinned: boolean;
     position: { x: number; y: number };
+    lastEditted: Date;
 }
 
 interface DraggableCardProps {
