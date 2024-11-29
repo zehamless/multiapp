@@ -40,7 +40,7 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
     };
 
     return (
-        <Draggable nodeRef={nodeRef} defaultPosition={card.position} onStop={onDragStop} bounds="parent"
+        <Draggable nodeRef={nodeRef} position={card.position} onStop={onDragStop} bounds="parent"
                    handle="#card_drag" disabled={editState.isEditing || editState.isPinned}>
             <div ref={nodeRef} className="h-fit">
                 <Card className="w-fit" onDoubleClick={handleDoubleClick}>
@@ -55,10 +55,10 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
                         <p style={{whiteSpace: 'pre-wrap'}}>{card.content}</p>
                     </CardContent>
                     <div className="m-3 flex items-end justify-between">
-                        <Button variant="outline" size="icon"  onClick={handleDelete}>
+                        <Button variant="outline" size="icon" className="size-6" onClick={handleDelete}>
                             <X/>
                         </Button>
-                        <p className="text-xs pl-4">{card.lastEditted.toLocaleString()}</p>
+                        <p className="text-xs pl-4">{card.lastEditted.toDateString()}</p>
                     </div>
 
                 </Card>

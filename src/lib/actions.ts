@@ -1,51 +1,94 @@
+interface Position {
+    x: number;
+    y: number;
+}
+
+interface Card {
+    id: number;
+    title: string;
+    content: string;
+    pinned: boolean;
+    position: Position;
+    lastEditted: Date;
+}
+
 import {DraggableData} from "react-draggable";
 
-
 let cards: Card[] = [
-    {id: 1, title: "Card Title 1", content: "Card Content 1", pinned: false, position: {x: 0, y: 0}, lastEditted: new Date()},
-    {id: 2, title: "Card Title 2", content: "Card Content 2", pinned: false, position: {x: 0, y: 0}, lastEditted: new Date()},
-    {id: 3, title: "Card Title 3", content: "Card Content 3", pinned: false, position: {x: 0, y: 0}, lastEditted: new Date()},
+    {
+        id: 1,
+        title: "Card Title 1",
+        content: "Card Content 1",
+        pinned: false,
+        position: {x: 0, y: 0},
+        lastEditted: new Date('2021-09-01T12:00:00')
+    },
+    {
+        id: 2,
+        title: "Card Title 2",
+        content: "Card Content 2",
+        pinned: false,
+        position: {x: 0, y: 0},
+        lastEditted: new Date('2021-09-01T12:00:00')
+    },
+    {
+        id: 3,
+        title: "Card Title 3",
+        content: "Card Content 3",
+        pinned: false,
+        position: {x: 0, y: 0},
+        lastEditted: new Date('2021-09-01T12:00:00')
+    },
 ];
 
-// Function to retrieve all cards
 export function getCards(): Card[] {
     return cards;
 }
 
-// Function to update a card's position
 export function updateCard(id: number, data: DraggableData): void {
     const card = cards.find(card => card.id === id);
-    if (card) {
-        card.position = {x: data.x, y: data.y};
-        console.log("Card updated", card);
+    if (!card) {
+        console.error(`Card with id ${id} not found`);
+        return;
     }
+    card.position = {x: data.x, y: data.y};
+    console.log("Card updated", card);
 }
 
-// Function to update card content
 export function updateCardContent(id: number, title: string, content: string): void {
     const card = cards.find(card => card.id === id);
-    if (card) {
-        card.title = title;
-        card.content = content;
-        card.lastEditted = new Date();
-        console.log("Card content updated", card);
+    if (!card) {
+        console.error(`Card with id ${id} not found`);
+        return;
     }
+    card.title = title;
+    card.content = content;
+    card.lastEditted = new Date();
+    console.log("Card content updated", card);
 }
 
 export function addCard(title: string, content: string): void {
-    const id = Math.max(...cards.map(({id}) => id)) + 1;
+    const id = cards.length > 0 ? Math.max(...cards.map(({id}) => id)) + 1 : 1;
     const newCard = {id, title, content, pinned: false, position: {x: 0, y: 0}, lastEditted: new Date()};
-    cards.push(newCard);
+    cards = [...cards, newCard];
     console.log("Card added", newCard);
-    console.log("All cards", cards);
 }
 
 export function deleteCard(id: number): void {
+    if (!cards.some(card => card.id === id)) {
+        console.error(`Card with id ${id} not found`);
+        return;
+    }
     cards = cards.filter(card => card.id !== id);
+    console.log("Card deleted", id);
 }
+
 export function togglePin(id: number): void {
     const card = cards.find(card => card.id === id);
-    if (card) {
-        card.pinned = !card.pinned;
+    if (!card) {
+        console.error(`Card with id ${id} not found`);
+        return;
     }
+    card.pinned = !card.pinned;
+    console.log("Card pin toggled", card);
 }
