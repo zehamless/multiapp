@@ -1,7 +1,7 @@
 'use client'
 import DraggableCard from "@/components/draggable-card";
 import {Button} from "@/components/ui/button";
-import {addCard, deleteCard, getCards, togglePin, updateCard, updateCardContent} from "@/lib/actions";
+import {addCard, deleteCard, getCards, togglePin, updateCard, updateCardContent} from "@/lib/actions/note-actions";
 import {DraggableData} from 'react-draggable';
 import {useState} from "react";
 
