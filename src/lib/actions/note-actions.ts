@@ -1,17 +1,3 @@
-interface Position {
-    x: number;
-    y: number;
-}
-
-interface Card {
-    id: number;
-    title: string;
-    content: string;
-    pinned: boolean;
-    position: Position;
-    lastEditted: Date;
-}
-
 import {DraggableData} from "react-draggable";
 
 let cards: Card[] = [
