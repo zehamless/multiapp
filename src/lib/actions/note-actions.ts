@@ -7,7 +7,7 @@ let cards: Card[] = [
         content: "Card Content 1",
         pinned: false,
         position: {x: 0, y: 0},
-        lastEditted: new Date('2021-09-01T12:00:00')
+        lastEdited: new Date('2021-09-01T12:00:00')
     },
     {
         id: 2,
@@ -15,7 +15,7 @@ let cards: Card[] = [
         content: "Card Content 2",
         pinned: false,
         position: {x: 0, y: 0},
-        lastEditted: new Date('2021-09-01T12:00:00')
+        lastEdited: new Date('2021-09-01T12:00:00')
     },
     {
         id: 3,
@@ -23,7 +23,7 @@ let cards: Card[] = [
         content: "Card Content 3",
         pinned: false,
         position: {x: 0, y: 0},
-        lastEditted: new Date('2021-09-01T12:00:00')
+        lastEdited: new Date('2021-09-01T12:00:00')
     },
 ];
 
@@ -49,13 +49,13 @@ export function updateCardContent(id: number, title: string, content: string): v
     }
     card.title = title;
     card.content = content;
-    card.lastEditted = new Date();
+    card.lastEdited = new Date();
     console.log("Card content updated", card);
 }
 
 export function addCard(title: string, content: string): void {
     const id = cards.length > 0 ? Math.max(...cards.map(({id}) => id)) + 1 : 1;
-    const newCard = {id, title, content, pinned: false, position: {x: 0, y: 0}, lastEditted: new Date()};
+    const newCard = {id, title, content, pinned: false, position: {x: 0, y: 0}, lastEdited: new Date()};
     cards = [...cards, newCard];
     console.log("Card added", newCard);
 }

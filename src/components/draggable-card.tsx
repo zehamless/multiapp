@@ -58,7 +58,7 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
                         <Button variant="outline" size="icon" className="size-6" onClick={handleDelete}>
                             <X/>
                         </Button>
-                        <p className="text-xs pl-4">{card.lastEditted.toDateString()}</p>
+                        <p className="text-xs pl-4">{card.lastEdited.toDateString()}</p>
                     </div>
 
                 </Card>
