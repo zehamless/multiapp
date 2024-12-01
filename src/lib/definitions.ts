@@ -3,20 +3,21 @@ type Card = {
     title: string;
     content: string;
     pinned: boolean;
-    position: { x: number; y: number };
+    position: { x: number; y: number, z: number };
     lastEdited: Date;
 }
 
 interface DraggableCardProps {
     card: Card;
     onDragStop: (e: any, data: any) => void;
-    onUpdate: (id: number, title: string, content: string) => void;
+    onUpdate: (card: { id: number, title?: string, content?: string, zIndex: number }) => void;
     onDelete: (id: number) => void;
     onPin: (id: number) => void;
 }
- type UML = {
+
+type UML = {
     id: number;
     title: string;
     content: string;
     lastEdited: Date;
- }
+}

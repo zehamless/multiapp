@@ -12,9 +12,10 @@ export default function NotePage() {
         updateCard(id, data);
         setCards([...cards]);
     };
-    const handleUpdateCardContent = (id: number, title: string, content: string) => {
-        updateCardContent(id, title, content);
+    const handleUpdateCardContent = ({id, title, content, zIndex}: {id: number, title?: string, content?: string, zIndex: number}) => {
+        updateCardContent({id: id, title: title, content: content, zIndex: zIndex});
         setCards([...cards]);
+        // console.log("Card content updated", {id, title, content, zIndex});
     };
     const handleAddCard = () => {
         addCard("New Card", "New Card Content");

@@ -1,4 +1,4 @@
-import {memo, useEffect, useRef, useState} from 'react';
+import React, {memo, useEffect, useRef, useState, useCallback} from 'react';
 import Draggable from 'react-draggable';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Button} from "@/components/ui/button";
@@ -7,6 +7,7 @@ import {Textarea} from "@/components/ui/textarea";
 import {Input} from "@/components/ui/input";
 import {Label} from "@/components/ui/label";
 import {Pin, PinOff, X} from "lucide-react";
+import {ContextMenu, ContextMenuContent, ContextMenuItem, ContextMenuTrigger} from "@/components/ui/context-menu";
 
 const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: DraggableCardProps) => {
     const nodeRef = useRef<HTMLDivElement>(null);
@@ -15,7 +16,8 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
         isEditing: false,
         title: card.title,
         content: card.content,
-        isPinned: card.pinned
+        isPinned: card.pinned,
+        zIndex: card.position.z
     });
 
     useEffect(() => {
@@ -25,44 +27,65 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
         }
     }, [editState.content]);
 
-    const handleDoubleClick = () => setEditState({...editState, isEditing: true});
-    const handleSave = () => {
-        setEditState({...editState, isEditing: false});
-        onUpdate(card.id, editState.title, editState.content);
-    };
-    const handleCancel = () => setEditState({...editState, isEditing: false});
-    const handleTitleChange = (e: React.ChangeEvent<HTMLInputElement>) => setEditState({...editState, title: e.target.value});
-    const handleContentChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => setEditState({...editState, content: e.target.value});
-    const handleDelete = () => onDelete(card.id);
-    const handlePin = () => {
+    const handleDoubleClick = useCallback(() => setEditState(prevState => ({...prevState, isEditing: true})), []);
+    const handleSave = useCallback(() => {
+        setEditState(prevState => ({...prevState, isEditing: false}));
+        onUpdate({id: card.id, title: editState.title, content: editState.content, zIndex: editState.zIndex});
+    }, [card.id, editState.title, editState.content, onUpdate, editState.zIndex]);
+    const handleCancel = useCallback(() => setEditState(prevState => ({...prevState, isEditing: false})), []);
+    const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const {id, value} = e.target;
+        setEditState(prevState => ({
+            ...prevState,
+            [id]: value
+        }));
+    }, []);
+    const handleDelete = useCallback(() => onDelete(card.id), [card.id, onDelete]);
+    const handlePin = useCallback(() => {
         onPin(card.id);
-        setEditState({...editState, isPinned: !editState.isPinned});
-    };
+        setEditState(prevState => ({...prevState, isPinned: !prevState.isPinned}));
+    }, [card.id, onPin]);
+    const handleZFront = useCallback(() => {
+        setEditState(prevState => ({...prevState, zIndex: prevState.zIndex + 1}))
+        onUpdate({id: card.id, zIndex: editState.zIndex});
+    }, [onUpdate, card.id, editState.zIndex]);
+    const handleZBack = useCallback(() => setEditState(prevState => ({
+        ...prevState,
+        zIndex: prevState.zIndex - 1
+    })), []);
 
     return (
         <Draggable nodeRef={nodeRef} position={card.position} onStop={onDragStop} bounds="parent"
                    handle="#card_drag" disabled={editState.isEditing || editState.isPinned}>
-            <div ref={nodeRef} className="h-fit">
-                <Card className="w-fit" onDoubleClick={handleDoubleClick}>
-                    <div className="p-2 flex justify-end">
-                        {editState.isPinned ? <PinOff size={20} onClick={handlePin}/> :
-                            <Pin size={20} onClick={handlePin}/>}
-                    </div>
-                    <CardHeader id="card_drag" className="py-1 cursor-pointer">
-                        <CardTitle>{card.title}</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p style={{whiteSpace: 'pre-wrap'}}>{card.content}</p>
-                    </CardContent>
-                    <div className="m-3 flex items-end justify-between">
-                        <Button variant="outline" size="icon" className="size-6" onClick={handleDelete}>
-                            <X/>
-                        </Button>
-                        <p className="text-xs pl-4">{card.lastEdited.toDateString()}</p>
-                    </div>
-
-                </Card>
-                <Dialog open={editState.isEditing} onOpenChange={(isOpen) => setEditState({...editState, isEditing: isOpen})}>
+            <div ref={nodeRef} className={`h-fit z-${editState.zIndex}`}>
+                <ContextMenu>
+                    <ContextMenuTrigger>
+                        <Card className="w-fit" onDoubleClick={handleDoubleClick}>
+                            <div className="p-2 flex justify-end">
+                                {editState.isPinned ? <PinOff size={20} onClick={handlePin}/> :
+                                    <Pin size={20} onClick={handlePin}/>}
+                            </div>
+                            <CardHeader id="card_drag" className="py-1 cursor-pointer">
+                                <CardTitle>{card.title}</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p style={{whiteSpace: 'pre-wrap'}}>{card.content}</p>
+                            </CardContent>
+                            <div className="m-3 flex items-end justify-between">
+                                <Button variant="outline" size="icon" className="size-6" onClick={handleDelete}>
+                                    <X/>
+                                </Button>
+                                <p className="text-xs pl-4">{card.lastEdited.toDateString()}</p>
+                            </div>
+                        </Card>
+                    </ContextMenuTrigger>
+                    <ContextMenuContent>
+                        <ContextMenuItem onClick={handleZFront}>Set Front</ContextMenuItem>
+                        <ContextMenuItem onClick={handleZBack}>Set Back</ContextMenuItem>
+                    </ContextMenuContent>
+                </ContextMenu>
+                <Dialog open={editState.isEditing}
+                        onOpenChange={(isOpen) => setEditState(prevState => ({...prevState, isEditing: isOpen}))}>
                     <DialogContent className="sm:max-w-[425px]">
                         <DialogHeader>
                             <DialogTitle>Edit {card.title}</DialogTitle>
@@ -70,12 +93,13 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
                         <div className="grid gap-4 py-4">
                             <div className="grid w-full max-w-sm items-center gap-1.5">
                                 <Label htmlFor="title">Title</Label>
-                                <Input id="title" type="text" className="w-full" value={editState.title} onChange={handleTitleChange}/>
+                                <Input id="title" type="text" className="w-full" value={editState.title}
+                                       onChange={handleInputChange}/>
                             </div>
                             <div className="grid w-full max-w-sm items-center gap-1.5">
                                 <Label htmlFor="content">Content</Label>
                                 <Textarea id="content" ref={textareaRef} value={editState.content} className="w-full"
-                                          onChange={handleContentChange} style={{resize: 'none', overflow: 'hidden'}}/>
+                                          onChange={handleInputChange} style={{resize: 'none', overflow: 'hidden'}}/>
                             </div>
                         </div>
                         <DialogFooter>
