@@ -62,10 +62,12 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
                     <ContextMenuTrigger>
                         <Card className="w-fit" onDoubleClick={handleDoubleClick}>
                             <div className="p-2 flex justify-end">
-                                {editState.isPinned ? <PinOff size={20} onClick={handlePin}/> :
-                                    <Pin size={20} onClick={handlePin}/>}
+                                {editState.isPinned ?
+                                    <PinOff size={20} onClick={handlePin}
+                                            className="cursor-pointer hover:bg-gray-100"/> :
+                                    <Pin size={20} onClick={handlePin} className="cursor-pointer hover:bg-gray-100"/>}
                             </div>
-                            <CardHeader id="card_drag" className="py-1 cursor-pointer">
+                            <CardHeader id="card_drag" className="py-1 cursor-grab">
                                 <CardTitle>{card.title}</CardTitle>
                             </CardHeader>
                             <CardContent>
