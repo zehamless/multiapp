@@ -85,7 +85,7 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: AuthProps = {})
     [handleRequest, params.token])
 
     const resendEmailVerification = useCallback((props: RequestProps) =>
-        handleRequest('/email/verification-notification', {}, null, props.setStatus),
+        handleRequest('/email/verification-notification', {}, undefined, props.setStatus),
     [handleRequest])
 
     const logout = useCallback(async () => {
