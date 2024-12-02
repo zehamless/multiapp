@@ -1,5 +1,8 @@
 'use client';
 import Link from "next/link"
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
+import { useState } from 'react';
 
 import { Button } from "@/components/ui/button"
 import {
@@ -11,32 +14,41 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {useAuth} from "@/hooks/auth";
-import {FormEvent} from "react";
+import { useAuth } from "@/hooks/auth";
+import { ErrorLabel } from "@/components/error-label";
+import { Loader2 } from 'lucide-react';
 
 export function LoginForm() {
-
-    const { login, user } = useAuth({
+    const { login } = useAuth({
         middleware: 'guest',
         redirectIfAuthenticated: '/note',
     })
-    console.log(user)
-const submitForm = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-    // console.log(formData)
-    //
-    await login({
-        email: formData.get('email') as string,
-        password: formData.get('password') as string,
-        remember: true,
-        setErrors: (errors) => console.log(errors),
-        setStatus: (status) => console.log(status),
-    })
-}
+    const [isLoading, setIsLoading] = useState(false);
+
+    const formik = useFormik({
+        initialValues: {
+            email: '',
+            password: '',
+        },
+        validationSchema: Yup.object({
+            email: Yup.string().email('Invalid email address').required('Email is required'),
+            password: Yup.string().required('Password is required'),
+        }),
+        onSubmit: async (values, { setErrors, setStatus }) => {
+            setIsLoading(true);
+            await login({
+                email: values.email,
+                password: values.password,
+                remember: true,
+                setErrors: (errors) => console.log(errors),
+                setStatus: (status) => console.log(status),
+            });
+            setIsLoading(false);
+        },
+    });
 
     return (
-        <form onSubmit={submitForm}>
+        <form onSubmit={formik.handleSubmit}>
             <Card className="mx-auto max-w-sm">
                 <CardHeader>
                     <CardTitle className="text-2xl">Login</CardTitle>
@@ -51,36 +63,49 @@ const submitForm = async (event: FormEvent<HTMLFormElement>) => {
                             <Input
                                 id="email"
                                 type="email"
-                                name="email"
+                                // name="email"
                                 placeholder="m@example.com"
                                 required
+                                {...formik.getFieldProps('email')}
                             />
+                            {formik.touched.email && formik.errors.email ? (
+                                <ErrorLabel message={formik.errors.email} />
+                            ) : null}
                         </div>
                         <div className="grid gap-2">
                             <div className="flex items-center">
                                 <Label htmlFor="password">Password</Label>
-                                <Link href="#" className="ml-auto inline-block text-sm underline">
-                                    Forgot your password?
-                                </Link>
                             </div>
-                            <Input id="password" type="password" required name="password" />
+                            <Input
+                                id="password"
+                                type="password"
+                                // name="password"
+                                required
+                                {...formik.getFieldProps('password')}
+                            />
+                            {formik.touched.password && formik.errors.password ? (
+                                <ErrorLabel message={formik.errors.password} />
+                            ) : null}
                         </div>
-                        <Button type="submit" className="w-full">
-                            Login
-                        </Button>
-                        <Button variant="outline" className="w-full">
-                            Login with Google
+                        <Button type="submit" className="w-full" disabled={isLoading}>
+                            {isLoading ? (
+                                <>
+                                    <Loader2 className="animate-spin" />
+                                    Please wait
+                                </>
+                            ) : (
+                                'Login'
+                            )}
                         </Button>
                     </div>
                     <div className="mt-4 text-center text-sm">
                         Don&apos;t have an account?{" "}
-                        <Link href="#" className="underline">
+                        <Link href="/registration" className="underline">
                             Sign up
                         </Link>
                     </div>
                 </CardContent>
             </Card>
         </form>
-
     )
 }
