@@ -60,7 +60,7 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
             <div ref={nodeRef} className={`h-fit z-${editState.zIndex}`}>
                 <ContextMenu>
                     <ContextMenuTrigger>
-                        <Card className="w-fit" onDoubleClick={handleDoubleClick}>
+                        <Card className="w-fit min-w-48" onDoubleClick={handleDoubleClick}>
                             <div className="p-2 flex justify-end">
                                 {editState.isPinned ?
                                     <PinOff size={20} onClick={handlePin}
@@ -77,7 +77,7 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
                                 <Button variant="outline" size="icon" className="size-6" onClick={handleDelete}>
                                     <X/>
                                 </Button>
-                                <p className="text-xs pl-4">{card.lastEdited.toDateString()}</p>
+                                <p className="text-xs pl-4">{new Date(card.lastEdited).toDateString()}</p>
                             </div>
                         </Card>
                     </ContextMenuTrigger>

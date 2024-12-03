@@ -1,4 +1,5 @@
 import {DraggableData} from "react-draggable";
+import axios from "@/lib/axios";
 
 let cards: Card[] = [
     {
@@ -27,8 +28,16 @@ let cards: Card[] = [
     },
 ];
 
-export function getCards(): Card[] {
-    return cards;
+export async function getCards(): Promise<Card[]> {
+
+    try {
+        const response = await axios.get('api/cards');
+        console.log(response.data.data)
+        return response.data.data;
+    } catch (err) {
+        console.log('err', err);
+        return [];
+    }
 }
 
 export function updateCard(id: number, data: DraggableData): void {
@@ -38,7 +47,7 @@ export function updateCard(id: number, data: DraggableData): void {
         return;
     }
     card.position = {x: data.x, y: data.y, z: card.position.z};
-    console.log("Card updated", card);
+    // console.log("Card updated", card);
 }
 
 export function updateCardContent({id, title, content, zIndex}: {
@@ -54,16 +63,16 @@ export function updateCardContent({id, title, content, zIndex}: {
     }
     if (title) card.title = title;
     if (content) card.content = content;
-    if(zIndex) card.position.z = zIndex;
+    if (zIndex) card.position.z = zIndex;
     card.lastEdited = new Date();
-    console.log("Card content updated", card);
+    // console.log("Card content updated", card);
 }
 
 export function addCard(title: string, content: string): void {
     const id = cards.length > 0 ? Math.max(...cards.map(({id}) => id)) + 1 : 1;
     const newCard = {id, title, content, pinned: false, position: {x: 0, y: 0, z: 0}, lastEdited: new Date()};
     cards = [...cards, newCard];
-    console.log("Card added", newCard);
+    // console.log("Card added", newCard);
 }
 
 export function deleteCard(id: number): void {
@@ -72,7 +81,7 @@ export function deleteCard(id: number): void {
         return;
     }
     cards = cards.filter(card => card.id !== id);
-    console.log("Card deleted", id);
+    // console.log("Card deleted", id);
 }
 
 export function togglePin(id: number): void {
@@ -82,5 +91,5 @@ export function togglePin(id: number): void {
         return;
     }
     card.pinned = !card.pinned;
-    console.log("Card pin toggled", card);
+    // console.log("Card pin toggled", card);
 }
