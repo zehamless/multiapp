@@ -1,5 +1,5 @@
 import React, {memo, useEffect, useRef, useState, useCallback} from 'react';
-import Draggable from 'react-draggable';
+import Draggable, {DraggableData, DraggableEvent} from 'react-draggable';
 import {Card, CardContent, CardHeader, CardTitle} from '@/components/ui/card';
 import {Button} from "@/components/ui/button";
 import {Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle} from "@/components/ui/dialog";
@@ -17,7 +17,7 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
         title: card.title,
         content: card.content,
         isPinned: card.pinned,
-        zIndex: card.position.z
+        position: card.position,
     });
 
     useEffect(() => {
@@ -30,8 +30,9 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
     const handleDoubleClick = useCallback(() => setEditState(prevState => ({...prevState, isEditing: true})), []);
     const handleSave = useCallback(() => {
         setEditState(prevState => ({...prevState, isEditing: false}));
-        onUpdate({id: card.id, title: editState.title, content: editState.content, zIndex: editState.zIndex});
-    }, [card.id, editState.title, editState.content, onUpdate, editState.zIndex]);
+        onUpdate({id: card.id, title: editState.title, content: editState.content});
+    }, [card.id, editState.title, editState.content, onUpdate]);
+
     const handleCancel = useCallback(() => setEditState(prevState => ({...prevState, isEditing: false})), []);
     const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const {id, value} = e.target;
@@ -46,21 +47,41 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
         setEditState(prevState => ({...prevState, isPinned: !prevState.isPinned}));
     }, [card.id, onPin]);
     const handleZFront = useCallback(() => {
-        setEditState(prevState => ({...prevState, zIndex: prevState.zIndex + 1}))
-        onUpdate({id: card.id, zIndex: editState.zIndex});
-    }, [onUpdate, card.id, editState.zIndex]);
-    const handleZBack = useCallback(() => setEditState(prevState => ({
-        ...prevState,
-        zIndex: prevState.zIndex - 1
-    })), []);
+        const newPosition = {
+            x: editState.position.x,
+            y: editState.position.y,
+            z: editState.position.z + 1
+        }
+        setEditState(prevState => ({...prevState, position: newPosition}));
+        onDragStop(null, newPosition);
+
+    }, [card.id, editState.position.x, editState.position.y, editState.position.z, onDragStop]);
+
+    const handleZBack = useCallback(() => {
+        const newPosition = {
+            x: editState.position.x,
+            y: editState.position.y,
+            z: editState.position.z - 1
+        }
+        setEditState(prevState => ({...prevState, position: newPosition}));
+        onDragStop(null, newPosition);
+    }, [card.id, editState.position.x, editState.position.y, editState.position.z, onDragStop]);
+
+    const handleDragStop = useCallback((e: DraggableEvent, data: DraggableData) => {
+        const {x, y} = data;
+        const newPosition = {x, y, z: editState.position.z};
+        setEditState(prevState => ({...prevState, position: newPosition}));
+        onDragStop(e, newPosition);
+        console.log(newPosition);
+    }, [onDragStop, editState.position.z]);
 
     return (
-        <Draggable nodeRef={nodeRef} position={card.position} onStop={onDragStop} bounds="parent"
+        <Draggable nodeRef={nodeRef} position={editState.position} onStop={handleDragStop} bounds="parent"
                    handle="#card_drag" disabled={editState.isEditing || editState.isPinned}>
-            <div ref={nodeRef} className={`h-fit z-${editState.zIndex}`}>
+            <div ref={nodeRef} className={`h-fit z-${editState.position.z}`}>
                 <ContextMenu>
                     <ContextMenuTrigger>
-                        <Card className="w-fit min-w-48" onDoubleClick={handleDoubleClick}>
+                        <Card className="w-fit min-w-48 max-w-64" onDoubleClick={handleDoubleClick}>
                             <div className="p-2 flex justify-end">
                                 {editState.isPinned ?
                                     <PinOff size={20} onClick={handlePin}

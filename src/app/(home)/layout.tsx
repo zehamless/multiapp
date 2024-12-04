@@ -8,7 +8,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
         <AuthGuard>
             <SidebarProvider>
                 <AppSidebar />
-                <main className="container">
+                <main className="w-screen">
                     <SidebarTrigger />
                     <Separator/>
                     {children}

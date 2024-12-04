@@ -1,3 +1,4 @@
+
 type Card = {
     id: number;
     title: string;
@@ -8,11 +9,11 @@ type Card = {
 }
 
 interface DraggableCardProps {
-    card: Card;
-    onDragStop: (e: any, data: any) => void;
-    onUpdate: (card: { id: number, title?: string, content?: string, zIndex: number }) => void;
-    onDelete: (id: number) => void;
-    onPin: (id: number) => void;
+    card: Card,
+    onDragStop: (e: any, data: any) => void,
+    onUpdate: (card: { id: number, title: string, content: string, }) => void,
+    onDelete: (id: number) => void,
+    onPin: (id: number) => void,
 }
 
 type UML = {

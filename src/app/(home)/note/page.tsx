@@ -1,7 +1,14 @@
 'use client'
 import DraggableCard from "@/components/draggable-card";
 import {Button} from "@/components/ui/button";
-import {addCard, deleteCard, getCards, togglePin, updateCard, updateCardContent} from "@/lib/actions/note-actions";
+import {
+    addCard,
+    deleteCard,
+    getCards,
+    togglePin,
+    updateCard,
+    updateCardContent,
+} from "@/lib/actions/note-actions";
 import {DraggableData} from 'react-draggable';
 import {useState, useEffect} from "react";
 
@@ -13,19 +20,28 @@ export default function NotePage() {
             const fetchedCards = await getCards();
             setCards(fetchedCards);
         }
+
         fetchCards();
     }, []);
 
-    const handleStop = (id: number, e: any, data: DraggableData) => {
-        updateCard(id, data);
-        setCards([...cards]);
+    const handleStop = async (id: number, e: any, data:{x: number, y: number, z: number}) => {
+        try {
+            await updateCard(id, data);
+            setCards([...cards]);
+        } catch (error) {
+            console.error('Failed to update card:', error);
+        }
     };
-    const handleUpdateCardContent = ({id, title, content, zIndex}: {id: number, title?: string, content?: string, zIndex: number}) => {
-        updateCardContent({id: id, title: title, content: content, zIndex: zIndex});
-        setCards([...cards]);
+    const handleUpdateCardContent = async ({id, title, content}: { id: number, title: string, content: string }) => {
+        try {
+            await updateCardContent({id: id, title: title, content: content});
+            setCards([...await getCards()]);
+        } catch (error) {
+            console.error('Failed to update card content:', error);
+        }
     };
     const handleAddCard = async () => {
-        addCard("New Card", "New Card Content");
+        addCard();
         setCards([...await getCards()]);
     };
     const handleDeleteCard = async (id: number) => {
@@ -49,10 +65,14 @@ export default function NotePage() {
             <DraggableCard
                 key={0}
                 card={cardDemo}
-                onDragStop={()=>{}}
-                onUpdate={()=>{}}
-                onDelete={()=>{}}
-                onPin={()=>{}}
+                onDragStop={() => {
+                }}
+                onUpdate={() => {
+                }}
+                onDelete={() => {
+                }}
+                onPin={() => {
+                }}
             />
             {cards.map((card) => (
                 <DraggableCard
