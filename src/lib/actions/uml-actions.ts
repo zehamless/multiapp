@@ -28,3 +28,9 @@ export async function updateUML(id: number, content: { content: string }) {
         console.log(err);
     });
 }
+export async function addUML(title:string): Promise<UML> {
+    const response = await axios.post('api/umls', {
+        title: title,
+    });
+    return response.data;
+}
