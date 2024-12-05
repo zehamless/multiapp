@@ -60,7 +60,7 @@ export default function NotePage() {
         lastEdited: new Date('2021-09-01T12:00:00')
     }
     return (
-        <section className="relative flex h-full bg-gray-100 gap-4">
+        <div className="relative h-screen bg-gray-100">
             <Button className="z-20 m-5 shadow-amber-400" onClick={handleAddCard}>Add</Button>
             <DraggableCard
                 key={0}
@@ -84,6 +84,6 @@ export default function NotePage() {
                     onPin={handlePin}
                 />
             ))}
-        </section>
+        </div>
     );
 }

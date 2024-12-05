@@ -36,7 +36,7 @@ export async function getCards(): Promise<Card[]> {
         // console.log(response.data.data)
         return response.data.data;
     } catch (err) {
-        console.log('err', err);
+        // console.log('err', err);
         return [];
     }
 }
@@ -49,10 +49,11 @@ export async function updateCard(id: number, data:{x: number, y: number, z: numb
             z: data.z
         }
     }
+    // console.log('server data', flattenedData.position);
     await axios.patch(`api/cards/${id}`, flattenedData).then((response) => {
-        console.log(response.data);
+        console.log(response.data.data.position);
     }).catch((err) => {
-        console.log(err);
+        // console.log(err);
     });
 }
 
@@ -62,17 +63,22 @@ export async function updateCardContent({id, title, content}: {
     content: string,
 }) {
     await axios.patch(`api/cards/${id}`, {title, content}).then((response) => {
-        console.log(response.data);
+        // console.log(response.data);
     }).catch((err) => {
-        console.log(err);
+        // console.log(err);
     });
 
 }
 
 
-export function addCard(): void {
-
-    // console.log("Card added", newCard);
+export async function addCard(): Promise<Card> {
+    const response = await axios.post('api/cards', {
+        title: "New Card",
+        content: "New Card",
+        pinned: false,
+        position: {x: 0, y: 0, z: 10},
+    });
+    return response.data;
 }
 
 export function deleteCard(id: number): void {

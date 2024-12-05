@@ -30,7 +30,7 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
     const handleDoubleClick = useCallback(() => setEditState(prevState => ({...prevState, isEditing: true})), []);
     const handleSave = useCallback(() => {
         setEditState(prevState => ({...prevState, isEditing: false}));
-        onUpdate({id: card.id, title: editState.title, content: editState.content});
+        // onUpdate({id: card.id, title: editState.title, content: editState.content});
     }, [card.id, editState.title, editState.content, onUpdate]);
 
     const handleCancel = useCallback(() => setEditState(prevState => ({...prevState, isEditing: false})), []);
@@ -72,13 +72,14 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
         const newPosition = {x, y, z: editState.position.z};
         setEditState(prevState => ({...prevState, position: newPosition}));
         onDragStop(e, newPosition);
-        console.log(newPosition);
+        console.log('drag stop', newPosition);
     }, [onDragStop, editState.position.z]);
 
     return (
         <Draggable nodeRef={nodeRef} position={editState.position} onStop={handleDragStop} bounds="parent"
+                   defaultClassName="absolute"
                    handle="#card_drag" disabled={editState.isEditing || editState.isPinned}>
-            <div ref={nodeRef} className={`h-fit z-${editState.position.z}`}>
+            <div ref={nodeRef} className={`h-fit w-fit z-${editState.position.z}`}>
                 <ContextMenu>
                     <ContextMenuTrigger>
                         <Card className="w-fit min-w-48 max-w-64" onDoubleClick={handleDoubleClick}>
@@ -89,10 +90,10 @@ const DraggableCard = memo(({card, onDragStop, onUpdate, onDelete, onPin}: Dragg
                                     <Pin size={20} onClick={handlePin} className="cursor-pointer hover:bg-gray-100"/>}
                             </div>
                             <CardHeader id="card_drag" className="py-1 cursor-grab">
-                                <CardTitle>{card.title}</CardTitle>
+                                <CardTitle>{editState.title}</CardTitle>
                             </CardHeader>
                             <CardContent>
-                                <p style={{whiteSpace: 'pre-wrap'}}>{card.content}</p>
+                                <p style={{whiteSpace: 'pre-wrap'}}>{editState.content}</p>
                             </CardContent>
                             <div className="m-3 flex items-end justify-between">
                                 <Button variant="outline" size="icon" className="size-6" onClick={handleDelete}>
