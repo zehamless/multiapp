@@ -108,10 +108,10 @@ export const useAuth = ({ middleware, redirectIfAuthenticated }: AuthProps = {})
             }
 
             if (middleware === 'auth') {
-                if (!user?.email_verified_at) {
-                    router.push('/verify-email')
-                    return
-                }
+                // if (!user?.email_verified_at) {
+                //     router.push('/verify-email')
+                //     return
+                // }
                 if (error) {
                     logout()
                     return

@@ -1,33 +1,4 @@
-import {DraggableData} from "react-draggable";
 import axios from "@/lib/axios";
-import {stringify} from "node:querystring";
-
-let cards: Card[] = [
-    {
-        id: 1,
-        title: "Card Title 1",
-        content: "Card Content 1",
-        pinned: false,
-        position: {x: 0, y: 0, z: 10},
-        lastEdited: new Date('2021-09-01T12:00:00')
-    },
-    {
-        id: 2,
-        title: "Card Title 2",
-        content: "Card Content 2",
-        pinned: false,
-        position: {x: 0, y: 0, z: 10},
-        lastEdited: new Date('2021-09-01T12:00:00')
-    },
-    {
-        id: 3,
-        title: "Card Title 3",
-        content: "Card Content 3",
-        pinned: false,
-        position: {x: 0, y: 0, z: 10},
-        lastEdited: new Date('2021-09-01T12:00:00')
-    },
-];
 
 export async function getCards(): Promise<Card[]> {
 

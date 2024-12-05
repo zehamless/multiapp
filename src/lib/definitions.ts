@@ -20,5 +20,5 @@ type UML = {
     id: number;
     title: string;
     content: string;
-    lastEdited: Date;
+    updated_at: string
 }

@@ -2,30 +2,33 @@
 
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
-import {useAuth} from "@/hooks/auth";
+import { useAuth } from "@/hooks/auth";
 
 export default function AuthGuard({ children }: { children: React.ReactNode }) {
-    const { user } = useAuth();
     const router = useRouter();
-    const [isLoading, setIsLoading] = useState(true);
+    const { user, error } = useAuth({ middleware: 'auth' });
+    const [mounted, setMounted] = useState(false);
 
     useEffect(() => {
-        if (!user && !isLoading) {
-            router.push('/login');
-        } else {
-            setIsLoading(false);
-        }
-    }, [user, router, isLoading]);
+        setMounted(true);
+    }, []);
 
-    if (isLoading) {
+    if (!mounted) {
+        return null;
+    }
+
+    // Now we can safely show loading state on client only
+    if (!error && !user) {
         return (
-            <div className="flex items-center justify-center min-h-screen">
+            <div className="flex flex-col items-center justify-center min-h-screen gap-4">
                 <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+                <p className="text-gray-600">Verifying your authentication...</p>
             </div>
         );
     }
 
-    if (!user) {
+    if (error || !user) {
+        router.push('/login');
         return null;
     }
 
