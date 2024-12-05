@@ -41,7 +41,7 @@ export async function getCards(): Promise<Card[]> {
     }
 }
 
-export async function updateCard(id: number, data:{x: number, y: number, z: number}): Promise<void> {
+export async function updateCard(id: number, data: { x: number, y: number, z: number }): Promise<void> {
     const flattenedData = {
         position: {
             x: data.x,
@@ -81,21 +81,20 @@ export async function addCard(): Promise<Card> {
     return response.data;
 }
 
-export function deleteCard(id: number): void {
-    if (!cards.some(card => card.id === id)) {
-        console.error(`Card with id ${id} not found`);
-        return;
-    }
-    cards = cards.filter(card => card.id !== id);
-    // console.log("Card deleted", id);
+export async function deleteCard(id: number): Promise<void> {
+    await axios.delete(`api/cards/${id}`).then((response) => {
+        // console.log(response.data);
+    }).catch((err) => {
+        // console.log(err);
+        // console.log("Card deleted", id);
+    })
 }
 
-export function togglePin(id: number): void {
-    const card = cards.find(card => card.id === id);
-    if (!card) {
-        console.error(`Card with id ${id} not found`);
-        return;
-    }
-    card.pinned = !card.pinned;
-    // console.log("Card pin toggled", card);
+export async function togglePin(id: number): Promise<void> {
+    await axios.patch(`api/cards/${id}`, {pinned: true}).then((response) => {
+        console.log(response.data.data.pinned);
+    }).catch((err) => {
+        console.error(err);
+    });
+    // console.log("Card pin toggled", id);
 }

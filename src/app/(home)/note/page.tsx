@@ -41,15 +41,15 @@ export default function NotePage() {
         }
     };
     const handleAddCard = async () => {
-        addCard();
+        await addCard();
         setCards([...await getCards()]);
     };
     const handleDeleteCard = async (id: number) => {
-        deleteCard(id);
+        await deleteCard(id);
         setCards([...await getCards()]);
     };
-    const handlePin = (id: number) => {
-        togglePin(id);
+    const handlePin = async (id: number) => {
+        await togglePin(id);
     };
     const cardDemo: Card = {
         id: 0,
